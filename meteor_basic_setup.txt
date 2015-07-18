@@ -1,0 +1,99 @@
+Meteor basic start:
+
+/
+	client
+		helpers
+			config.js
+				Accounts.ui.config({
+				  passwordSignupFields: 'USERNAME_ONLY'
+				});
+		templates
+			includes
+				loading.html
+					<template name="loading">
+					  {{>spinner}}
+					</template>
+				not_found.html
+					<template name="notFound">
+					  <div class="not-found page jumbotron">
+						<h2>404</h2>
+						<p>Sorry, we couldn't find a page at this address.</p>
+					  </div>
+					</template>
+			application
+				layout.html
+					<template name="layout">
+					  <div class="container">
+						{{> header}}
+						<div id="main">
+						  {{> yield}}
+						</div>
+					  </div>
+					</template>
+				header.html
+					<template name="header">
+					  <nav class="navbar navbar-default" role="navigation">
+						<div class="navbar-header">
+						  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navigation">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						  </button>
+						  <a class="navbar-brand" href="{{pathFor 'postsList'}}">Microscope</a>
+						</div>
+						<div class="collapse navbar-collapse" id="navigation">
+						  <ul class="nav navbar-nav navbar-right">
+							{{> loginButtons}}
+						  </ul>
+						</div>
+					  </nav>
+					</template>
+			posts
+				posts_list.js
+				posts_list.html
+				posts_page.html
+					<template name="postPage">
+					  <div class="post-page page">
+						{{> postItem}}
+					  </div>
+					</template>
+				posts_page.js				
+		stylesheets
+			style.css
+		main.html
+			<head>
+  				<title>Microscope</title>
+			</head>
+		main.js
+			Meteor.subscribe('posts');
+	server
+		publications.js
+			Meteor.publish('posts', function() {
+  				return Posts.find();
+			});
+		fixtures.js
+	lib
+		collections
+			posts.js
+		router.js
+			Router.configure({
+			  layoutTemplate: 'layout',
+			  notFoundTemplate: 'notFound',
+			  loadingTemplate: 'loading',
+			  waitOn: function() { return Meteor.subscribe('posts'); }
+			});
+			
+			Router.route('/', {name: 'postsList'});
+			Router.route('/posts/:_id', {
+			  name: 'postPage',
+			  data: function() { return Posts.findOne(this.params._id); }
+			});
+	
+	
+meteor add twbs:bootstrap
+meteor remove autopublish
+meteor add iron:router
+meteor add sacha:spin
+meteor add ian:accounts-ui-bootstrap-3
+meteor add accounts-password
